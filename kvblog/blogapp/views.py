@@ -141,9 +141,27 @@ class  Hh_RequestCreateView(UserPassesTestMixin, CreateView):
         # return self.request.user.is_superuser
         return self.request.user.is_dbAdmin
 
+    def create_data(self, last_request):
+        # print(last_request.keywords)
+        ad.set_keywords(last_request.keywords)
+        result = ad.get_data(last_request.keywords)
+        requirements_l = result[0]['requirements']
+        # pprint.pprint(requirements_l)
+        for item in requirements_l:
+            Hh_Response.objects.create(request=last_request,
+                                       skill_name=item["name"],
+                                       skill_count=item["count"],
+                                       skill_persent=round(int(item["persent"])))
+
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+    def get_success_url(self):
+        # id = self.object.id
+        # print(type(id), f'id={id}')
+        self.create_data(self.object)
+        return reverse('blog:req_list')
 
 # Update
 class Hh_RequestUpdateView(UserPassesTestMixin, UpdateView, ResponsesContextMixin):
