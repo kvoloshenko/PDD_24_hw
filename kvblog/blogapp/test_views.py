@@ -61,3 +61,20 @@ class ViewsTest(TestCase):
 
         response = self.client.get('/req_create/')
         self.assertEqual(response.status_code, 200)
+
+    def test_logined_dbAdmin(self):
+        BlogUser.objects.create_user(username='test_user',
+                                         email='test@test.com',
+                                         password='us1234567',
+                                         is_dbAdmin=True)
+        # Логиним
+        self.client.login(username='test_user', password='us1234567')
+
+        response = self.client.get('/req_create/')
+        self.assertEqual(response.status_code, 200)
+
+        # post зарос
+        response = self.client.post('/req_create/',
+                                    {'keywords': 'Python'})
+
+        self.assertEqual(response.status_code, 302)
