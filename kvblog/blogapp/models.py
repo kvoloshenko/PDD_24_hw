@@ -21,6 +21,14 @@ class Hh_Request(TimeStamp):
     def __str__(self):
         return self.keywords
 
+    def get_options_list(self):
+        OPTIONS_LIST = [
+            ('all', 'Везде'),
+            ('company', 'В названии компании'),
+            ('name', 'В названии вакансии'),
+        ]
+        return OPTIONS_LIST
+
 class Hh_Response(models.Model):
     request = models.ForeignKey(Hh_Request, on_delete=models.CASCADE)
     skill_name = models.TextField(blank=False)
