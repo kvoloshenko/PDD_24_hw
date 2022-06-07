@@ -1,6 +1,11 @@
 # PDD_24_hw
 Python: Testing in Django. Data generation with mixer
 
+## update 2022.06.07
+Added tests for the  views and its response codes.
+
+Added tests for permissions and response pages for different users
+
 ## update 2022.06.06
 Implemented user model: added new application 'usersapp'.
 
