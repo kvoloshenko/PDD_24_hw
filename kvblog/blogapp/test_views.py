@@ -24,7 +24,7 @@ class ViewsTest(TestCase):
 
     def test_login_required(self):
         BlogUser.objects.create_user(username='test_user',
-                                     email='test@test.com',
+                                     email=self.fake.email(),
                                      password='us1234567')
         # Он не вошел
         response = self.client.get('/form/')
@@ -53,7 +53,7 @@ class ViewsTest(TestCase):
 
     def test_login_required_dbAdmin(self):
         BlogUser.objects.create_user(username='test_user',
-                                         email='test@test.com',
+                                         email=self.fake.email(),
                                          password='us1234567',
                                          is_dbAdmin=True)
         # Логиним
@@ -64,7 +64,7 @@ class ViewsTest(TestCase):
 
     def test_logined_dbAdmin(self):
         BlogUser.objects.create_user(username='test_user',
-                                         email='test@test.com',
+                                         email=self.fake.email(),
                                          password='us1234567',
                                          is_dbAdmin=True)
         # Логиним
