@@ -29,6 +29,8 @@ def create_result(request, id):
     responses = Hh_Response.objects.filter(request = hh_request)
     return render(request, 'blogapp/result.html', context={'hh_request': hh_request, 'responses': responses})
 
+
+
 @login_required
 def create_form(request):
     form = Hh_Search_Form(request.POST)
@@ -130,22 +132,70 @@ class Hh_RequestDetailView(UserPassesTestMixin, DetailView, ResponsesContextMixi
 
 # Create
 class  Hh_RequestCreateView(UserPassesTestMixin, CreateView):
-    fields = '__all__'
+    # fields = '__all__'
+    fields = ['keywords']
     model = Hh_Request
     success_url = reverse_lazy('blog:req_list')
     template_name = 'blogapp/req_create.html'
     def test_func(self):
         # return self.request.user.is_superuser
         return self.request.user.is_dbAdmin
+
+    def create_data(self, last_request):
+        # print(last_request.keywords)
+        ad.set_keywords(last_request.keywords)
+        result = ad.get_data(last_request.keywords)
+        requirements_l = result[0]['requirements']
+        # pprint.pprint(requirements_l)
+        for item in requirements_l:
+            Hh_Response.objects.create(request=last_request,
+                                       skill_name=item["name"],
+                                       skill_count=item["count"],
+                                       skill_persent=round(int(item["persent"])))
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        # id = self.object.id
+        # print(type(id), f'id={id}')
+        self.create_data(self.object)
+        return reverse('blog:req_list')
+
 # Update
 class Hh_RequestUpdateView(UserPassesTestMixin, UpdateView, ResponsesContextMixin):
-    fields = '__all__'
+    # fields = '__all__'
+    fields = ['keywords']
     model = Hh_Request
     success_url = reverse_lazy('blog:req_list')
     template_name = 'blogapp/req_update.html'
+
     def test_func(self):
         # return self.request.user.is_superuser
         return self.request.user.is_dbAdmin
+
+    def update_data(self, id, keywords_s):
+        ad.set_keywords(keywords_s)
+        result = ad.get_data(keywords_s)
+        # keywords = result[0]['keywords']
+        last_request = Hh_Request.objects.get(id=id)
+        Hh_Response.objects.filter(request=last_request).delete()
+        requirements_l = result[0]['requirements']
+        for item in requirements_l:
+            Hh_Response.objects.create(request=last_request,
+                                       skill_name=item["name"],
+                                       skill_count=item["count"],
+                                       skill_persent=round(int(item["persent"])))
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        id = form.instance.id
+        # print (type(id),f'id={id}')
+        keywords = form.instance.keywords
+        # print(type(keywords), f'keywords={keywords}')
+        self.update_data(id, keywords)
+        return super().form_valid(form)
 
 # Delete
 class Hh_RequestDeleteView(UserPassesTestMixin, DeleteView):

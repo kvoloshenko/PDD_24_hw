@@ -1,10 +1,15 @@
 # PDD_24_hw
 Python: Testing in Django. Data generation with mixer
 
+## update 2022.06.07
+Added tests for the  views and its response codes.
+
+Added tests for permissions and response pages for different users
+
 ## update 2022.06.06
 Implemented user model: added new application 'usersapp'.
 
-The menu item “Data management” (req_list.html) is available only for logged in users.
+The menu items “Data management” (req_list.html), "Start searching" (form.html) and "History" (history.html) are available only for logged in users.
 
 If user attribute is_dbAdmin = True than it’s possible to change data at the pages:
 
